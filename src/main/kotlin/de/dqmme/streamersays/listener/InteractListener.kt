@@ -1,9 +1,7 @@
 package de.dqmme.streamersays.listener
 
-import de.dqmme.streamersays.manager.ChallengeManager
-import de.dqmme.streamersays.manager.GameManager
-import de.dqmme.streamersays.manager.KitManager
-import de.dqmme.streamersays.manager.MessageManager
+import de.dqmme.streamersays.manager.*
+import de.dqmme.streamersays.misc.Item
 import de.dqmme.streamersays.misc.Kit
 import de.dqmme.streamersays.misc.StreamerSaysPlayer
 import de.dqmme.streamersays.util.ItemBuilder
@@ -21,6 +19,7 @@ class InteractListener(
     private val gameManager: GameManager,
     private val challengeManager: ChallengeManager,
     private val kitManager: KitManager,
+    private val itemManager: ItemManager,
     private val messageManager: MessageManager
 ) :
     Listener {
@@ -101,14 +100,21 @@ class InteractListener(
                 }
 
                 compound.sortContentBy { it.itemMeta!!.displayName }
+
                 compoundScroll(
                     Slots.RowOneSlotNine,
-                    ItemStack(Material.PAPER), compound, scrollTimes = 6
+                    ItemBuilder(Material.PAPER)
+                        .displayName("§fNach unten")
+                        .addLore("§7Scrolle §fnach unten§7.")
+                        .build(), compound, scrollTimes = 6
                 )
 
                 compoundScroll(
                     Slots.RowThreeSlotNine,
-                    ItemStack(Material.PAPER), compound, scrollTimes = 6, reverse = true
+                    ItemBuilder(Material.PAPER)
+                        .displayName("§fNach oben")
+                        .addLore("§7Scrolle §fnach oben§7.")
+                        .build(), compound, scrollTimes = 6, reverse = true
                 )
             }
 
@@ -118,7 +124,7 @@ class InteractListener(
                     iconGenerator = {
                         ItemStack(it)
                     },
-                    onClick = { _, element ->
+                    onClick = { clickEvent, element ->
                         val challengeName = element.itemMeta!!.displayName.replace("§a", "")
                         val challenge = challengeManager.challengeByName(challengeName)
 
@@ -139,6 +145,8 @@ class InteractListener(
                             messageManager.message("challenge_started")
                                 .replace("%challenge%", challengeName)
                         )
+
+                        clickEvent.bukkitEvent.isCancelled = true
                     }
                 )
 
@@ -157,21 +165,72 @@ class InteractListener(
                 }
 
                 compound.sortContentBy { it.itemMeta!!.displayName }
+
                 compoundScroll(
                     Slots.RowOneSlotNine,
-                    ItemStack(Material.PAPER), compound, scrollTimes = 6
+                    ItemBuilder(Material.PAPER)
+                        .displayName("§fNach unten")
+                        .addLore("§7Scrolle §fnach unten§7.")
+                        .build(), compound, scrollTimes = 6
                 )
 
                 compoundScroll(
                     Slots.RowThreeSlotNine,
-                    ItemStack(Material.PAPER), compound, scrollTimes = 6, reverse = true
+                    ItemBuilder(Material.PAPER)
+                        .displayName("§fNach oben")
+                        .addLore("§7Scrolle §fnach oben§7.")
+                        .build(), compound, scrollTimes = 6, reverse = true
+                )
+            }
+
+            page(4) {
+                transitionFrom = PageChangeEffect.SLIDE_HORIZONTALLY
+                transitionTo = PageChangeEffect.SLIDE_HORIZONTALLY
+
+                val compound = createRectCompound<ItemStack>(
+                    Slots.RowOneSlotOne, Slots.RowThreeSlotEight,
+                    iconGenerator = {
+                        ItemStack(it)
+                    },
+                    onClick = { clickEvent, element ->
+                        val itemName = element.itemMeta!!.displayName.replace("§a", "")
+                        val item = itemManager.itemByName(itemName)
+
+                        clickEvent.player.openGUI(itemGiveGUI(item!!))
+                    }
+                )
+
+                for(item in itemManager.items()) {
+                    compound.addContent(
+                        ItemBuilder(Material.IRON_SWORD)
+                            .displayName("§a${item.name}")
+                            .build()
+                    )
+                }
+
+                compound.sortContentBy { it.itemMeta!!.displayName }
+
+                compoundScroll(
+                    Slots.RowOneSlotNine,
+                    ItemBuilder(Material.PAPER)
+                        .displayName("§fNach unten")
+                        .addLore("§7Scrolle §fnach unten§7.")
+                        .build(), compound, scrollTimes = 6
+                )
+
+                compoundScroll(
+                    Slots.RowThreeSlotNine,
+                    ItemBuilder(Material.PAPER)
+                        .displayName("§fNach oben")
+                        .addLore("§7Scrolle §fnach oben§7.")
+                        .build(), compound, scrollTimes = 6, reverse = true
                 )
             }
         }
     }
 
-    private fun kitGiveGUI(kit: Kit): GUI<ForInventorySixByNine> {
-        return kSpigotGUI(GUIType.SIX_BY_NINE) {
+    private fun kitGiveGUI(kit: Kit): GUI<ForInventoryThreeByNine> {
+        return kSpigotGUI(GUIType.THREE_BY_NINE) {
             title = "§aKit geben"
             page(1) {
                 val compound = createRectCompound<ItemStack>(
@@ -179,7 +238,7 @@ class InteractListener(
                     iconGenerator = {
                         ItemStack(it)
                     },
-                    onClick = { _, element ->
+                    onClick = { event, element ->
                         val playerName = element.itemMeta!!.displayName.replace("§e", "")
 
                         if (playerName.lowercase() == "alle spieler") {
@@ -197,6 +256,8 @@ class InteractListener(
                                 }
                             }
                         }
+
+                        event.bukkitEvent.isCancelled = true
                     }
                 )
 
@@ -208,24 +269,103 @@ class InteractListener(
                 )
 
                 for (all in Bukkit.getOnlinePlayers()) {
-                    compound.addContent(
-                        SkullBuilder()
-                            .displayName("§e${all.name}")
-                            .addLore("§7Gebe §e${all.name} §b${kit.name}§7.")
-                            .owner(all)
-                            .build()
-                    )
+                    val streamerSaysPlayer = StreamerSaysPlayer.getPlayer(all)
+
+                    if(streamerSaysPlayer.isAlive) {
+                        compound.addContent(
+                            SkullBuilder()
+                                .displayName("§e${all.name}")
+                                .addLore("§7Gebe §e${all.name} §b${kit.name}§7.")
+                                .owner(all)
+                                .build()
+                        )
+                    }
                 }
 
                 compound.sortContentBy { it.itemMeta!!.displayName }
+
                 compoundScroll(
                     Slots.RowOneSlotNine,
-                    ItemStack(Material.PAPER), compound, scrollTimes = 6
+                    ItemBuilder(Material.PAPER)
+                        .displayName("§fNach unten")
+                        .addLore("§7Scrolle §fnach unten§7.")
+                        .build(), compound, scrollTimes = 6
                 )
 
                 compoundScroll(
-                    Slots.RowSixSlotNine,
-                    ItemStack(Material.PAPER), compound, scrollTimes = 6, reverse = true
+                    Slots.RowThreeSlotNine,
+                    ItemBuilder(Material.PAPER)
+                        .displayName("§fNach oben")
+                        .addLore("§7Scrolle §fnach oben§7.")
+                        .build(), compound, scrollTimes = 6, reverse = true
+                )
+            }
+        }
+    }
+
+    private fun itemGiveGUI(item: Item): GUI<ForInventoryThreeByNine> {
+        return kSpigotGUI(GUIType.THREE_BY_NINE) {
+            title = "§aItem geben"
+            page(1) {
+                val compound = createRectCompound<ItemStack>(
+                    Slots.RowOneSlotOne, Slots.RowThreeSlotEight,
+                    iconGenerator = {
+                        ItemStack(it)
+                    },
+                    onClick = { event, element ->
+                        val playerName = element.itemMeta!!.displayName.replace("§e", "")
+
+                        if (playerName.lowercase() == "alle spieler") {
+                            for (all in Bukkit.getOnlinePlayers()) {
+                                all.inventory.addItem(item.itemStack)
+                            }
+                        } else {
+                            val player = Bukkit.getPlayer(playerName)
+
+                            player?.inventory?.addItem(item.itemStack)
+                        }
+
+                        event.bukkitEvent.isCancelled = true
+                    }
+                )
+
+                compound.addContent(
+                    ItemBuilder(Material.LIME_CONCRETE)
+                        .displayName("§eAlle Spieler")
+                        .addLore("§7Gebe §e§lallen Spielern §b${item.name}§7.")
+                        .build()
+                )
+
+                for (all in Bukkit.getOnlinePlayers()) {
+                    val streamerSaysPlayer = StreamerSaysPlayer.getPlayer(all)
+
+                    if(streamerSaysPlayer.isAlive) {
+                        compound.addContent(
+                            SkullBuilder()
+                                .displayName("§e${all.name}")
+                                .addLore("§7Gebe §e${all.name} §b${item.name}§7.")
+                                .owner(all)
+                                .build()
+                        )
+                    }
+                }
+
+                compound.sortContentBy { it.itemMeta!!.displayName }
+
+                compoundScroll(
+                    Slots.RowOneSlotNine,
+                    ItemBuilder(Material.PAPER)
+                        .displayName("§fNach unten")
+                        .addLore("§7Scrolle §fnach unten§7.")
+                        .build(), compound, scrollTimes = 6
+                )
+
+                compoundScroll(
+                    Slots.RowThreeSlotNine,
+                    ItemBuilder(Material.PAPER)
+                        .displayName("§fNach oben")
+                        .addLore("§7Scrolle §fnach oben§7.")
+                        .build(), compound, scrollTimes = 6, reverse = true
                 )
             }
         }

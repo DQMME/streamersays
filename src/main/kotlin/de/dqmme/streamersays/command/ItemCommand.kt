@@ -1,10 +1,10 @@
 package de.dqmme.streamersays.command
 
 import de.dqmme.streamersays.StreamerSays
-import de.dqmme.streamersays.manager.KitManager
+import de.dqmme.streamersays.manager.ItemManager
 import de.dqmme.streamersays.manager.MessageManager
-import de.dqmme.streamersays.misc.Challenge
 import de.dqmme.streamersays.misc.Emojis
+import de.dqmme.streamersays.misc.Item
 import de.dqmme.streamersays.misc.Kit
 import de.dqmme.streamersays.util.ItemBuilder
 import net.axay.kspigot.gui.*
@@ -16,13 +16,9 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class KitCommand(
-    private val instance: StreamerSays,
-    private val kitManager: KitManager,
-    private val messageManager: MessageManager
-) : TabExecutor {
+class ItemCommand(private val instance: StreamerSays, private val itemManager: ItemManager, private val messageManager: MessageManager) : TabExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if (!sender.hasPermission("streamersays.kit")) {
+        if (!sender.hasPermission("streamersays.item")) {
             sender.sendMessage(messageManager.message("no_permissions"))
             return false
         }
@@ -30,27 +26,25 @@ class KitCommand(
         if (args.isEmpty()) {
             sender.sendMessage(
                 messageManager.message("invalid_usage")
-                    .replace("%prefix%", "/kit <add>")
+                    .replace("%usage%", "/item <add>")
             )
             return false
         }
 
         when (args[0].lowercase()) {
             "add" -> {
-                if (sender !is Player) {
+                if(sender !is Player) {
                     sender.sendMessage(messageManager.message("not_a_player"))
                     return false
                 }
 
-                if (args.size != 1) {
-                    sender.sendMessage(
-                        messageManager.message("invalid_usage")
-                            .replace("%usage%", "/kit add")
-                    )
+                if(args.size != 1) {
+                    sender.sendMessage(messageManager.message("invalid_usage")
+                        .replace("%prefix%", "/item add"))
                     return false
                 }
 
-                openKitGUI(sender, null, null)
+                openItemGUI(sender, null, null)
             }
         }
 
@@ -70,12 +64,12 @@ class KitCommand(
         }
     }
 
-    private fun openKitGUI(player: Player, kitName: String?, kitItems: List<ItemStack>?) {
-        var name: String? = kitName
-        var items: List<ItemStack>? = kitItems
+    private fun openItemGUI(player: Player, itemName: String?, itemStack: ItemStack?) {
+        var name: String? = itemName
+        var item: ItemStack? = itemStack
 
         val gui = kSpigotGUI(GUIType.THREE_BY_NINE) {
-            title = "§aKit erstellen"
+            title = "§aItem erstellen"
 
             page(1) {
                 placeholder(
@@ -87,7 +81,7 @@ class KitCommand(
                 pageChanger(
                     Slots.RowTwoSlotFour, ItemBuilder(Material.NAME_TAG)
                         .displayName("§aNamen festlegen " + if (name != null) "§a${Emojis.HOOK}" else "§c${Emojis.X}")
-                        .addLore("§7Setze den §aNamen §7des Kits.")
+                        .addLore("§7Setze den §aNamen §7des Items.")
                         .addLore("§aAktuell: §f" + (name ?: "§7N/A"))
                         .build(),
                     2, null, null
@@ -95,20 +89,21 @@ class KitCommand(
 
                 pageChanger(
                     Slots.RowTwoSlotSix, ItemBuilder(Material.ENDER_CHEST)
-                        .displayName("§aItems festlegen " + if (items != null && items!!.isNotEmpty()) "§a${Emojis.HOOK}" else "§c${Emojis.X}")
+                        .displayName("§aItem festlegen " + if (item != null) "§a${Emojis.HOOK}" else "§c${Emojis.X}")
                         .addLore("§7Setze die §aItems §7des Kits.")
+                        .addLore("§aAktuell: §f" + if (itemStack != null) itemStack.itemMeta!!.displayName else "§7N/A")
                         .build(),
                     3, null, null
                 )
 
-                if (name != null && items != null && items!!.isNotEmpty()) {
+                if (name != null && item != null) {
                     button(
                         Slots.RowOneSlotNine, ItemBuilder(Material.LIME_DYE)
                             .displayName("§aBestätigen")
-                            .addLore("§7Klicke dieses Item um §adas Kit §7zu speichern.")
+                            .addLore("§7Klicke dieses Item um §adas Item §7zu speichern.")
                             .build()
                     ) {
-                        kitManager.addKit(Kit(name!!, items!!))
+                        itemManager.addItem(Item(name!!, item!!))
 
                         player.closeInventory()
                     }
@@ -139,12 +134,12 @@ class KitCommand(
                             AnvilGUI.Response.close()
                         }
                         .onClose {
-                            openKitGUI(player, name, items)
+                            openItemGUI(player, name, item)
                         }
-                        .text("Challenge-Name")
+                        .text("Item-Name")
                         .itemLeft(
                             ItemBuilder(Material.PAPER)
-                                .addLore("§7Trage §aden Namen §7des Kits ein.")
+                                .addLore("§7Trage §aden Namen §7des Items ein.")
                                 .build()
                         )
                         .title("§aNamen eingeben")
@@ -165,33 +160,24 @@ class KitCommand(
                 transitionFrom = PageChangeEffect.SLIDE_HORIZONTALLY
                 transitionTo = PageChangeEffect.SLIDE_HORIZONTALLY
 
-                freeSlot(Slots.All)
+                placeholder(Slots.All, ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
+                    .displayName("§c")
+                    .build())
+
+                freeSlot(Slots.RowTwoSlotFive)
 
                 button(
                     Slots.RowOneSlotFive, ItemBuilder(Material.GREEN_CONCRETE)
                         .displayName("§aSpeichern und zum Hauptmenü")
-                        .addLore("§7Klicke dieses Item um die Items §azu speichern.")
+                        .addLore("§7Klicke dieses Item um das Item §azu speichern.")
                         .build()
                 ) { guiClickEvent ->
                     run {
-                        val contents = arrayListOf<ItemStack>()
+                        val inventoryItem = guiClickEvent.bukkitEvent.view.topInventory.getItem(13)
 
-                        for (content in guiClickEvent.bukkitEvent.view.topInventory.contents) {
-                            contents.add(content)
-                        }
+                        item = inventoryItem
 
-                        contents.remove(
-                            ItemBuilder(Material.GREEN_CONCRETE)
-                                .displayName("§aSpeichern und zum Hauptmenü")
-                                .addLore("§7Klicke dieses Item um die Items §azu speichern.")
-                                .build()
-                        )
-
-                        contents.removeIf { itemStack: ItemStack? -> itemStack == null }
-
-                        items = contents
-
-                        openKitGUI(player, name, items)
+                        openItemGUI(player, name, item)
                     }
                 }
             }
