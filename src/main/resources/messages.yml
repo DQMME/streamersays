@@ -1,0 +1,19 @@
+prefix: "&7[&eStreamerSays&7]"
+
+not_a_player: "%prefix% &7Dieser Befehl muss als Spieler ausgeführt werden."
+player_not_found: "%prefix% &cSpieler nicht gefunden."
+no_permissions: "%prefix% &cKeine Rechte."
+invalid_usage: "%prefix% &7Falsche Verwendung. §cVerwendung %usage%"
+
+challenge_created: "%prefix% &7Du die Challenge erfolgreich gespeichert."
+challenge_started: "%prefix% &7Die Challenge &e&l%challenge% §7hat begonnen!"
+
+game_joined: "%prefix% &7Du bist in der Runde dabei. Warte bis der &eGameMaster &7das Spiel startet."
+game_already_running: "%prefix% &7Das Spiel läuft bereits. Deshalb bist du Zuschauer"
+
+no_longer_gamemaster: "%prefix% &7Du bist nun kein &eGameMaster &7mehr."
+you_are_gamemaster: "%prefix% &7Du bist jetzt der &eGameMaster&7."
+gamemaster_is: "%prefix% &7Der &eGameMaster &7ist &b%player%&7. Nutze &e/gamemaster set <player> &7um den GameMaster zu setzen."
+gamemaster_set: "%prefix% &7Du hast den &eGameMaster &7auf &b%player%"
+
+player_died: "%prefix% &b%player% &7ist ausgeschieden. &cF in den Chat!"

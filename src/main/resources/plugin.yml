@@ -1,0 +1,10 @@
+name: StreamerSays
+api-version: 1.16
+authors: [DQMME]
+main: de.dqmme.streamersays.StreamerSays
+version: 1.0
+commands:
+  challenge:
+    permission: streamersays.challenge
+  gamemaster:
+    permission: streamersays.gamemaster
