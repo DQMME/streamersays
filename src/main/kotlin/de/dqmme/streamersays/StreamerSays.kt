@@ -1,9 +1,6 @@
 package de.dqmme.streamersays
 
-import de.dqmme.streamersays.command.ChallengeCommand
-import de.dqmme.streamersays.command.GameMasterCommand
-import de.dqmme.streamersays.command.ItemCommand
-import de.dqmme.streamersays.command.KitCommand
+import de.dqmme.streamersays.command.*
 import de.dqmme.streamersays.listener.DeathListener
 import de.dqmme.streamersays.listener.HungerListener
 import de.dqmme.streamersays.listener.InteractListener
@@ -90,5 +87,8 @@ class StreamerSays : KSpigot() {
 
         getCommand("item")!!.setExecutor(ItemCommand(this, itemManager, messageManager))
         getCommand("item")!!.setTabCompleter(ItemCommand(this, itemManager, messageManager))
+
+        getCommand("revive")!!.setExecutor(ReviveCommand(gameManager, messageManager))
+        getCommand("revive")!!.setTabCompleter(ReviveCommand(gameManager, messageManager))
     }
 }

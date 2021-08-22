@@ -17,3 +17,6 @@ gamemaster_is: "%prefix% &7Der &eGameMaster &7ist &b%player%&7. Nutze &e/gamemas
 gamemaster_set: "%prefix% &7Du hast den &eGameMaster &7auf &b%player%"
 
 player_died: "%prefix% &b%player% &7ist ausgeschieden. &cF in den Chat!"
+
+you_got_revived: "%prefix% &7Du wurdest wiederbelebt."
+player_revived: "%prefix% &7Du hast &b%player% &7wiederbelebt."

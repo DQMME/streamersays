@@ -22,7 +22,7 @@ class KitCommand(
     private val messageManager: MessageManager
 ) : TabExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if (!sender.hasPermission("streamersays.kit")) {
+        if (!sender.hasPermission("streamersays.kit") || !sender.hasPermission("streamersays.*")) {
             sender.sendMessage(messageManager.message("no_permissions"))
             return false
         }

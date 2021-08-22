@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack
 
 class ItemCommand(private val instance: StreamerSays, private val itemManager: ItemManager, private val messageManager: MessageManager) : TabExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if (!sender.hasPermission("streamersays.item")) {
+        if (!sender.hasPermission("streamersays.item") || !sender.hasPermission("streamersays.*")) {
             sender.sendMessage(messageManager.message("no_permissions"))
             return false
         }

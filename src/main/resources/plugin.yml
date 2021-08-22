@@ -12,3 +12,5 @@ commands:
     permission: streamersays.kit
   item:
     permission: streamersays.item
+  revive:
+    permission: streamersays.revive
