@@ -4,10 +4,13 @@ import de.dqmme.streamersays.manager.*
 import de.dqmme.streamersays.misc.Item
 import de.dqmme.streamersays.misc.Kit
 import de.dqmme.streamersays.misc.StreamerSaysPlayer
-import de.dqmme.streamersays.util.ItemBuilder
 import de.dqmme.streamersays.util.Items
 import de.dqmme.streamersays.util.SkullBuilder
 import net.axay.kspigot.gui.*
+import net.axay.kspigot.items.addLore
+import net.axay.kspigot.items.itemStack
+import net.axay.kspigot.items.meta
+import net.axay.kspigot.items.name
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -47,30 +50,43 @@ class InteractListener(
                 transitionTo = PageChangeEffect.SLIDE_HORIZONTALLY
 
                 placeholder(
-                    Slots.All, ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-                        .displayName("§c")
-                        .build()
+                    Slots.All, Items.blackGlass()
                 )
 
                 pageChanger(
-                    Slots.RowTwoSlotThree, ItemBuilder(Material.DIAMOND_SWORD)
-                        .displayName("§bKits")
-                        .addLore("§7Klicke das Item um das §bKits-Menü §7zu öffnen.")
-                        .build(), 2, null, null
+                    Slots.RowTwoSlotThree, itemStack(Material.DIAMOND_SWORD) {
+                        meta {
+                            name = "§bKits"
+
+                            addLore {
+                                +"§7Klicke das Item um das §bKits-Menü §7zu öffnen."
+                            }
+                        }
+                    }, 2, null, null
                 )
 
                 pageChanger(
-                    Slots.RowTwoSlotFive, ItemBuilder(Material.TRIDENT)
-                        .displayName("§3Challenges")
-                        .addLore("§7Klicke das Item um das §3Challenges-Menü §7zu öffnen.")
-                        .build(), 3, null, null
+                    Slots.RowTwoSlotFive, itemStack(Material.TRIDENT) {
+                        meta {
+                            name = "§3Challenges"
+
+                            addLore {
+                                +"§7Klicke das item um das §bChallenge-Menü §7zu öffnen."
+                            }
+                        }
+                    }, 3, null, null
                 )
 
                 pageChanger(
-                    Slots.RowTwoSlotSeven, ItemBuilder(Material.IRON_SWORD)
-                        .displayName("§fItems")
-                        .addLore("§7Klicke das Item um das §fItem-Menü §7zu öffnen.")
-                        .build(), 4, null, null
+                    Slots.RowTwoSlotSeven, itemStack(Material.IRON_SWORD) {
+                        meta {
+                            name = "§fItems"
+
+                            addLore {
+                                +"§7Klicke das Item um das §fItem-Menü §7zu öffnen."
+                            }
+                        }
+                    }, 4, null, null
                 )
             }
 
@@ -93,9 +109,20 @@ class InteractListener(
 
                 for (kit in kitManager.kits()) {
                     compound.addContent(
-                        ItemBuilder(Material.DIAMOND_SWORD)
-                            .displayName("§a${kit.name}")
-                            .build()
+                        itemStack(Material.DIAMOND_SWORD) {
+                            meta {
+                                name = "§a${kit.name}"
+
+                                addLore {
+                                    +"§aItems:"
+                                    +"§7- §e${kit.items[0].itemMeta!!.displayName}"
+                                    +"§7- §e${kit.items[1].itemMeta!!.displayName}"
+                                    +"§7- §e${kit.items[2].itemMeta!!.displayName}"
+                                    +"§7- §e${kit.items[3].itemMeta!!.displayName}"
+                                    +"§7- §e${kit.items[4].itemMeta!!.displayName}"
+                                }
+                            }
+                        }
                     )
                 }
 
@@ -103,18 +130,12 @@ class InteractListener(
 
                 compoundScroll(
                     Slots.RowOneSlotNine,
-                    ItemBuilder(Material.PAPER)
-                        .displayName("§fNach unten")
-                        .addLore("§7Scrolle §fnach unten§7.")
-                        .build(), compound, scrollTimes = 6
+                    Items.scrollDown(), compound, scrollTimes = 6
                 )
 
                 compoundScroll(
                     Slots.RowThreeSlotNine,
-                    ItemBuilder(Material.PAPER)
-                        .displayName("§fNach oben")
-                        .addLore("§7Scrolle §fnach oben§7.")
-                        .build(), compound, scrollTimes = 6, reverse = true
+                    Items.scrollUp(), compound, scrollTimes = 6, reverse = true
                 )
             }
 
@@ -152,15 +173,20 @@ class InteractListener(
 
                 for (challenge in challengeManager.challenges()) {
                     compound.addContent(
-                        ItemBuilder(Material.DIAMOND_SWORD)
-                            .displayName("§a${challenge.name}")
-                            .addLore("§aBeschreibung:")
-                            .addLore("§f${challenge.description!!}")
-                            .addLore("§aLocation:")
-                            .addLore("§a${challenge.location!!.blockX}§7, §a${challenge.location.blockY}§7, §a${challenge.location.blockZ}")
-                            .addLore("§aGameMode:")
-                            .addLore("§e${challenge.gameMode!!.name}")
-                            .build()
+                        itemStack(Material.TRIDENT) {
+                            meta {
+                                name = "§a${challenge.name}"
+
+                                addLore {
+                                    +"§aBeschreibung:"
+                                    +"§f${challenge.description!!}"
+                                    +"§aLocation:"
+                                    +"§a${challenge.location!!.blockX}§7, §a${challenge.location.blockY}§7, §a${challenge.location.blockZ}"
+                                    +"§aGameMode:"
+                                    +"§e${challenge.gameMode!!.name}"
+                                }
+                            }
+                        }
                     )
                 }
 
@@ -168,18 +194,12 @@ class InteractListener(
 
                 compoundScroll(
                     Slots.RowOneSlotNine,
-                    ItemBuilder(Material.PAPER)
-                        .displayName("§fNach unten")
-                        .addLore("§7Scrolle §fnach unten§7.")
-                        .build(), compound, scrollTimes = 6
+                    Items.scrollDown(), compound, scrollTimes = 6
                 )
 
                 compoundScroll(
                     Slots.RowThreeSlotNine,
-                    ItemBuilder(Material.PAPER)
-                        .displayName("§fNach oben")
-                        .addLore("§7Scrolle §fnach oben§7.")
-                        .build(), compound, scrollTimes = 6, reverse = true
+                    Items.scrollUp(), compound, scrollTimes = 6, reverse = true
                 )
             }
 
@@ -200,11 +220,20 @@ class InteractListener(
                     }
                 )
 
-                for(item in itemManager.items()) {
+                for (item in itemManager.items()) {
                     compound.addContent(
-                        ItemBuilder(Material.IRON_SWORD)
-                            .displayName("§a${item.name}")
-                            .build()
+                        itemStack(Material.IRON_SWORD) {
+                            meta {
+                                name = "§a${item.name}"
+
+                                addLore {
+                                    +"§aDisplayName"
+                                    +"§e${item.itemStack.itemMeta!!.displayName}"
+                                    +"§aMaterial:"
+                                    +"§e${item.itemStack.type}"
+                                }
+                            }
+                        }
                     )
                 }
 
@@ -212,18 +241,12 @@ class InteractListener(
 
                 compoundScroll(
                     Slots.RowOneSlotNine,
-                    ItemBuilder(Material.PAPER)
-                        .displayName("§fNach unten")
-                        .addLore("§7Scrolle §fnach unten§7.")
-                        .build(), compound, scrollTimes = 6
+                    Items.scrollDown(), compound, scrollTimes = 6
                 )
 
                 compoundScroll(
                     Slots.RowThreeSlotNine,
-                    ItemBuilder(Material.PAPER)
-                        .displayName("§fNach oben")
-                        .addLore("§7Scrolle §fnach oben§7.")
-                        .build(), compound, scrollTimes = 6, reverse = true
+                    Items.scrollUp(), compound, scrollTimes = 6, reverse = true
                 )
             }
         }
@@ -262,16 +285,21 @@ class InteractListener(
                 )
 
                 compound.addContent(
-                    ItemBuilder(Material.LIME_CONCRETE)
-                        .displayName("§eAlle Spieler")
-                        .addLore("§7Gebe §e§lallen Spielern §b${kit.name}§7.")
-                        .build()
+                    itemStack(Material.LIME_CONCRETE) {
+                        meta {
+                            name = "§eAlle Spieler"
+
+                            addLore {
+                                +"§7Gebe §e§lallen Spielern §b${kit.name}§7."
+                            }
+                        }
+                    }
                 )
 
                 for (all in Bukkit.getOnlinePlayers()) {
                     val streamerSaysPlayer = StreamerSaysPlayer.getPlayer(all)
 
-                    if(streamerSaysPlayer.isAlive) {
+                    if (streamerSaysPlayer.isAlive) {
                         compound.addContent(
                             SkullBuilder()
                                 .displayName("§e${all.name}")
@@ -286,18 +314,12 @@ class InteractListener(
 
                 compoundScroll(
                     Slots.RowOneSlotNine,
-                    ItemBuilder(Material.PAPER)
-                        .displayName("§fNach unten")
-                        .addLore("§7Scrolle §fnach unten§7.")
-                        .build(), compound, scrollTimes = 6
+                    Items.scrollDown(), compound, scrollTimes = 6
                 )
 
                 compoundScroll(
                     Slots.RowThreeSlotNine,
-                    ItemBuilder(Material.PAPER)
-                        .displayName("§fNach oben")
-                        .addLore("§7Scrolle §fnach oben§7.")
-                        .build(), compound, scrollTimes = 6, reverse = true
+                    Items.scrollUp(), compound, scrollTimes = 6, reverse = true
                 )
             }
         }
@@ -330,16 +352,21 @@ class InteractListener(
                 )
 
                 compound.addContent(
-                    ItemBuilder(Material.LIME_CONCRETE)
-                        .displayName("§eAlle Spieler")
-                        .addLore("§7Gebe §e§lallen Spielern §b${item.name}§7.")
-                        .build()
+                    itemStack(Material.LIME_CONCRETE) {
+                        meta {
+                            name = "§eAlle Spieler"
+
+                            addLore {
+                                +"§7Gebe §e§lallen Spielern §b${item.name}§7."
+                            }
+                        }
+                    }
                 )
 
                 for (all in Bukkit.getOnlinePlayers()) {
                     val streamerSaysPlayer = StreamerSaysPlayer.getPlayer(all)
 
-                    if(streamerSaysPlayer.isAlive) {
+                    if (streamerSaysPlayer.isAlive) {
                         compound.addContent(
                             SkullBuilder()
                                 .displayName("§e${all.name}")
@@ -354,18 +381,12 @@ class InteractListener(
 
                 compoundScroll(
                     Slots.RowOneSlotNine,
-                    ItemBuilder(Material.PAPER)
-                        .displayName("§fNach unten")
-                        .addLore("§7Scrolle §fnach unten§7.")
-                        .build(), compound, scrollTimes = 6
+                    Items.scrollDown(), compound, scrollTimes = 6
                 )
 
                 compoundScroll(
                     Slots.RowThreeSlotNine,
-                    ItemBuilder(Material.PAPER)
-                        .displayName("§fNach oben")
-                        .addLore("§7Scrolle §fnach oben§7.")
-                        .build(), compound, scrollTimes = 6, reverse = true
+                    Items.scrollUp(), compound, scrollTimes = 6, reverse = true
                 )
             }
         }

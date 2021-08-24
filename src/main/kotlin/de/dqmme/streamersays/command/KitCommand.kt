@@ -3,11 +3,13 @@ package de.dqmme.streamersays.command
 import de.dqmme.streamersays.StreamerSays
 import de.dqmme.streamersays.manager.KitManager
 import de.dqmme.streamersays.manager.MessageManager
-import de.dqmme.streamersays.misc.Challenge
-import de.dqmme.streamersays.misc.Emojis
+import de.dqmme.streamersays.misc.Emoji
 import de.dqmme.streamersays.misc.Kit
-import de.dqmme.streamersays.util.ItemBuilder
+import de.dqmme.streamersays.util.Items
 import net.axay.kspigot.gui.*
+import net.axay.kspigot.items.addLore
+import net.axay.kspigot.items.itemStack
+import net.axay.kspigot.items.meta
 import net.wesjd.anvilgui.AnvilGUI
 import org.bukkit.Material
 import org.bukkit.command.Command
@@ -79,34 +81,47 @@ class KitCommand(
 
             page(1) {
                 placeholder(
-                    Slots.All, ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-                        .displayName("§c")
-                        .build()
+                    Slots.All, Items.blackGlass()
                 )
 
                 pageChanger(
-                    Slots.RowTwoSlotFour, ItemBuilder(Material.NAME_TAG)
-                        .displayName("§aNamen festlegen " + if (name != null) "§a${Emojis.HOOK}" else "§c${Emojis.X}")
-                        .addLore("§7Setze den §aNamen §7des Kits.")
-                        .addLore("§aAktuell: §f" + (name ?: "§7N/A"))
-                        .build(),
+                    Slots.RowTwoSlotFour, itemStack(Material.NAME_TAG) {
+                        meta {
+                            name = "§aNamen festlegen " + if (name != null) "§a${Emoji.HOOK.string()}" else "§c${Emoji.X.string()}"
+
+                            addLore {
+                                +"§7Setze den §aNamen §7des Kits."
+                                +"§aAktuell: §f${(name ?: "§7N/A")}"
+                            }
+                        }
+                    },
                     2, null, null
                 )
 
                 pageChanger(
-                    Slots.RowTwoSlotSix, ItemBuilder(Material.ENDER_CHEST)
-                        .displayName("§aItems festlegen " + if (items != null && items!!.isNotEmpty()) "§a${Emojis.HOOK}" else "§c${Emojis.X}")
-                        .addLore("§7Setze die §aItems §7des Kits.")
-                        .build(),
+                    Slots.RowTwoSlotSix, itemStack(Material.ENDER_CHEST) {
+                        meta {
+                            name = "§aItems festlegen " + if (items != null && items!!.isNotEmpty()) "§a${Emoji.HOOK.string()}" else "§c${Emoji.X.string()}"
+
+                            addLore {
+                                +"§7Setze die §aItems §7des Kits."
+                            }
+                        }
+                    },
                     3, null, null
                 )
 
                 if (name != null && items != null && items!!.isNotEmpty()) {
                     button(
-                        Slots.RowOneSlotNine, ItemBuilder(Material.LIME_DYE)
-                            .displayName("§aBestätigen")
-                            .addLore("§7Klicke dieses Item um §adas Kit §7zu speichern.")
-                            .build()
+                        Slots.RowOneSlotNine, itemStack(Material.LIME_DYE) {
+                            meta {
+                                name = "§aBestätigen"
+
+                                addLore {
+                                    +"§7Klicke dieses Item um §adas Kit §7zu speichern."
+                                }
+                            }
+                        }
                     ) {
                         kitManager.addKit(Kit(name!!, items!!))
 
@@ -120,17 +135,20 @@ class KitCommand(
                 transitionTo = PageChangeEffect.SLIDE_HORIZONTALLY
 
                 placeholder(
-                    Slots.All, ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-                        .displayName("§c")
-                        .build()
+                    Slots.All, Items.blackGlass()
                 )
 
                 button(
                     Slots.RowTwoSlotFive,
-                    ItemBuilder(Material.GREEN_CONCRETE)
-                        .displayName("§aKlick mich")
-                        .addLore("§aKlick §7dieses Item um den Namen einzugeben.")
-                        .build()
+                    itemStack(Material.GREEN_CONCRETE) {
+                        meta {
+                            name = "§aKlick mich"
+
+                            addLore {
+                                +"§aKlick §7dieses Item um den Namen einzugeben."
+                            }
+                        }
+                    }
                 ) {
                     AnvilGUI.Builder()
                         .preventClose()
@@ -143,9 +161,13 @@ class KitCommand(
                         }
                         .text("Challenge-Name")
                         .itemLeft(
-                            ItemBuilder(Material.PAPER)
-                                .addLore("§7Trage §aden Namen §7des Kits ein.")
-                                .build()
+                            itemStack(Material.PAPER) {
+                                meta {
+                                    addLore {
+                                        +"§7Trage §aden Namen §7des Kits ein."
+                                    }
+                                }
+                            }
                         )
                         .title("§aNamen eingeben")
                         .plugin(instance)
@@ -153,10 +175,7 @@ class KitCommand(
                 }
 
                 pageChanger(
-                    Slots.RowOneSlotOne, ItemBuilder(Material.PAPER)
-                        .displayName("§aZurürck zum Hauptmenü")
-                        .addLore("§7Kehre zurürck zum §aHauptmenü§7.")
-                        .build(),
+                    Slots.RowOneSlotOne, Items.mainMenu(),
                     1, null, null
                 )
             }
@@ -168,10 +187,15 @@ class KitCommand(
                 freeSlot(Slots.All)
 
                 button(
-                    Slots.RowOneSlotFive, ItemBuilder(Material.GREEN_CONCRETE)
-                        .displayName("§aSpeichern und zum Hauptmenü")
-                        .addLore("§7Klicke dieses Item um die Items §azu speichern.")
-                        .build()
+                    Slots.RowOneSlotFive, itemStack(Material.GREEN_CONCRETE) {
+                        meta {
+                            name = "§aSpeichern und zum Hauptmenü"
+
+                            addLore {
+                                +"§7Klicke dieses Item um die Items §azu speichern."
+                            }
+                        }
+                    }
                 ) { guiClickEvent ->
                     run {
                         val contents = arrayListOf<ItemStack>()
@@ -181,10 +205,15 @@ class KitCommand(
                         }
 
                         contents.remove(
-                            ItemBuilder(Material.GREEN_CONCRETE)
-                                .displayName("§aSpeichern und zum Hauptmenü")
-                                .addLore("§7Klicke dieses Item um die Items §azu speichern.")
-                                .build()
+                            itemStack(Material.GREEN_CONCRETE) {
+                                meta {
+                                    name = "§aSpeichern und zum Hauptmenü"
+
+                                    addLore {
+                                        +"§7Klicke dieses Item um die Items §azu speichern."
+                                    }
+                                }
+                            }
                         )
 
                         contents.removeIf { itemStack: ItemStack? -> itemStack == null }

@@ -13,17 +13,11 @@ class ChallengeManager(private val instance: StreamerSays) {
     }
 
     fun addChallenge(challenge: Challenge) {
-        if (challenge.description != null) {
-            challengeConf.set(challenge.name + ".description", challenge.description)
-        }
+        challengeConf.set(challenge.name + ".description", challenge.description!!)
 
-        if (challenge.location != null) {
-            challengeConf.set(challenge.name + ".location", challenge.location)
-        }
+        challengeConf.set(challenge.name + ".location", challenge.location!!)
 
-        if (challenge.gameMode != null) {
-            challengeConf.set(challenge.name + ".gamemode", challenge.gameMode.name)
-        }
+        challengeConf.set(challenge.name + ".gamemode", challenge.gameMode!!.name)
 
         saveFile()
     }

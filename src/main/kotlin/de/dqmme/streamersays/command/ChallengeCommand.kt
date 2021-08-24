@@ -4,9 +4,12 @@ import de.dqmme.streamersays.StreamerSays
 import de.dqmme.streamersays.manager.ChallengeManager
 import de.dqmme.streamersays.manager.MessageManager
 import de.dqmme.streamersays.misc.Challenge
-import de.dqmme.streamersays.misc.Emojis
-import de.dqmme.streamersays.util.ItemBuilder
+import de.dqmme.streamersays.misc.Emoji
+import de.dqmme.streamersays.util.Items
 import net.axay.kspigot.gui.*
+import net.axay.kspigot.items.addLore
+import net.axay.kspigot.items.itemStack
+import net.axay.kspigot.items.meta
 import net.wesjd.anvilgui.AnvilGUI
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -89,53 +92,80 @@ class ChallengeCommand(
 
             page(1) {
                 placeholder(
-                    Slots.All, ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-                        .displayName("§c")
-                        .build()
+                    Slots.All, Items.blackGlass()
                 )
 
                 pageChanger(
-                    Slots.RowTwoSlotTwo, ItemBuilder(Material.NAME_TAG)
-                        .displayName("§aNamen festlegen " + if (name != null) "§a${Emojis.HOOK}" else "§c${Emojis.X}")
-                        .addLore("§7Setze den §aNamen §7der Challenge.")
-                        .addLore("§aAktuell: §f" + if (name != null) name else "§7N/A")
-                        .build(),
+                    Slots.RowTwoSlotTwo, itemStack(Material.NAME_TAG) {
+                        meta {
+                            name =
+                                "§aNamen festlegen " + if (name != null) "§a${Emoji.HOOK.string()}" else "§c${Emoji.X.string()}"
+
+                            addLore {
+                                +"§7Setze den §aNamen §7der Challenge."
+                                +"§aAktuell: §f${if (name != null) name else "§7N/A"}"
+                            }
+                        }
+                    },
                     2, null, null
                 )
 
                 pageChanger(
-                    Slots.RowTwoSlotFour, ItemBuilder(Material.OAK_SIGN)
-                        .displayName("§aBeschreibung festlegen " + if (description != null) "§a${Emojis.HOOK}" else "§c${Emojis.X}")
-                        .addLore("§7Setze die §aBeschreibung §7der Challenge.")
-                        .addLore("§aAktuell: §f" + if (description != null) description else "§7N/A")
-                        .build(),
+                    Slots.RowTwoSlotFour, itemStack(Material.OAK_SIGN) {
+                        name =
+                            "§aBeschreibung festlegen " + if (description != null) "§a${Emoji.HOOK.string()}" else "§c${Emoji.X.string()}"
+
+                        meta {
+                            addLore {
+                                +"§7Setze die §aBeschreibung §7der Challenge."
+                                +"§aAktuell: §f${if (description != null) description else "§7N/A"}"
+                            }
+                        }
+                    },
                     3, null, null
                 )
 
                 pageChanger(
-                    Slots.RowTwoSlotSix, ItemBuilder(Material.ARROW)
-                        .displayName("§aLocation festlegen " + if (location != null) "§a${Emojis.HOOK}" else "§c${Emojis.X}")
-                        .addLore("§7Setze die §aLocation §7der Challenge.")
-                        .addLore("§aAktuell: " + if (location != null) "§a${location!!.blockX}§7, §a${location!!.blockY}§7, §a${location!!.blockZ}" else "§7N/A")
-                        .build(),
+                    Slots.RowTwoSlotSix, itemStack(Material.ARROW) {
+                        name =
+                            "§aLocation festlegen " + if (location != null) "§a${Emoji.HOOK.string()}" else "§c${Emoji.X.string()}"
+
+                        meta {
+                            addLore {
+                                +"§7Setze die §aLocation §7der Challenge."
+                                +"§aAktuell: ${if (location != null) "§a${location!!.blockX}§7, §a${location!!.blockY}§7, §a${location!!.blockZ}" else "§7N/A"}"
+                            }
+                        }
+                    },
                     4, null, null
                 )
 
                 pageChanger(
-                    Slots.RowTwoSlotEight, ItemBuilder(Material.GRASS_BLOCK)
-                        .displayName("§aGameMode festlegen " + if (gameMode != null) "§a${Emojis.HOOK}" else "§c${Emojis.X}")
-                        .addLore("§7Setze den §aGameMode §7der Challenge.")
-                        .addLore("§aAktuell: §e" + if (gameMode != null) gameMode!!.name else "§7N/A")
-                        .build(),
+                    Slots.RowTwoSlotEight, itemStack(Material.GRASS_BLOCK) {
+                        name =
+                            "§aGameMode festlegen " + if (gameMode != null) "§a${Emoji.HOOK.string()}" else "§c${Emoji.X.string()}"
+
+                        meta {
+                            addLore {
+                                +"§7Setze den §aGameMode §7der Challenge."
+                                +"§aAktuell: §e${if (gameMode != null) gameMode!!.name else "§7N/A"}"
+                            }
+                        }
+                    },
                     5, null, null
                 )
 
                 if (name != null && description != null && location != null && gameMode != null) {
                     button(
-                        Slots.RowOneSlotNine, ItemBuilder(Material.LIME_DYE)
-                            .displayName("§aBestätigen")
-                            .addLore("§7Klicke dieses Item um §adie Challenge §7zu speichern.")
-                            .build()
+                        Slots.RowOneSlotNine, itemStack(Material.LIME_DYE) {
+                            meta {
+                                name = "§aBestätigen"
+
+                                addLore {
+                                    +"§7Klicke dieses Item um §adie Challenge §7zu speichern."
+                                }
+                            }
+                        }
                     ) {
                         challengeManager.addChallenge(Challenge(name!!, description, location, gameMode))
 
@@ -151,17 +181,20 @@ class ChallengeCommand(
                 transitionTo = PageChangeEffect.SLIDE_HORIZONTALLY
 
                 placeholder(
-                    Slots.All, ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-                        .displayName("§c")
-                        .build()
+                    Slots.All, Items.blackGlass()
                 )
 
                 button(
                     Slots.RowTwoSlotFive,
-                    ItemBuilder(Material.GREEN_CONCRETE)
-                        .displayName("§aKlick mich")
-                        .addLore("§aKlick §7dieses Item um den Namen einzugeben.")
-                        .build()
+                    itemStack(Material.GREEN_CONCRETE) {
+                        meta {
+                            name = "§aKlick mich"
+
+                            addLore {
+                                +"§aKlick §7dieses Item um den Namen einzugeben."
+                            }
+                        }
+                    }
                 ) {
                     AnvilGUI.Builder()
                         .preventClose()
@@ -174,9 +207,13 @@ class ChallengeCommand(
                         }
                         .text("Challenge-Name")
                         .itemLeft(
-                            ItemBuilder(Material.PAPER)
-                                .addLore("§7Trage §aden Namen §7der Challenge ein.")
-                                .build()
+                            itemStack(Material.PAPER) {
+                                meta {
+                                    addLore {
+                                        +"§7Trage §aden Namen §7der Challenge ein."
+                                    }
+                                }
+                            }
                         )
                         .title("§aNamen eingeben")
                         .plugin(instance)
@@ -184,10 +221,7 @@ class ChallengeCommand(
                 }
 
                 pageChanger(
-                    Slots.RowOneSlotOne, ItemBuilder(Material.PAPER)
-                        .displayName("§aZurürck zum Hauptmenü")
-                        .addLore("§7Kehre zurürck zum §aHauptmenü§7.")
-                        .build(),
+                    Slots.RowOneSlotOne, Items.mainMenu(),
                     1, null, null
                 )
             }
@@ -197,17 +231,20 @@ class ChallengeCommand(
                 transitionTo = PageChangeEffect.SLIDE_HORIZONTALLY
 
                 placeholder(
-                    Slots.All, ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-                        .displayName("§c")
-                        .build()
+                    Slots.All, Items.blackGlass()
                 )
 
                 button(
                     Slots.RowTwoSlotFive,
-                    ItemBuilder(Material.GREEN_CONCRETE)
-                        .displayName("§aKlick mich")
-                        .addLore("§aKlick §7dieses Item um die Beschreibung einzugeben.")
-                        .build()
+                    itemStack(Material.GREEN_CONCRETE) {
+                        meta {
+                            name = "§aKlick mich"
+
+                            addLore {
+                                +"§aKlick §7dieses Item um die Beschreibung einzugeben."
+                            }
+                        }
+                    }
                 ) {
                     AnvilGUI.Builder()
                         .preventClose()
@@ -220,9 +257,13 @@ class ChallengeCommand(
                         }
                         .text("Beschreibung")
                         .itemLeft(
-                            ItemBuilder(Material.PAPER)
-                                .addLore("§7Trage §adie Beschreibung §7der Challenge ein.")
-                                .build()
+                            itemStack(Material.PAPER) {
+                                meta {
+                                    addLore {
+                                        +"§7Trage §adie Beschreibung §7der Challenge ein."
+                                    }
+                                }
+                            }
                         )
                         .title("§aBeschreibung eingeben")
                         .plugin(instance)
@@ -230,10 +271,7 @@ class ChallengeCommand(
                 }
 
                 pageChanger(
-                    Slots.RowOneSlotOne, ItemBuilder(Material.PAPER)
-                        .displayName("§aZurürck zum Hauptmenü")
-                        .addLore("§7Kehre zurürck zum §aHauptmenü§7.")
-                        .build(),
+                    Slots.RowOneSlotOne, Items.mainMenu(),
                     1, null, null
                 )
             }
@@ -243,27 +281,27 @@ class ChallengeCommand(
                 transitionTo = PageChangeEffect.SLIDE_HORIZONTALLY
 
                 placeholder(
-                    Slots.All, ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-                        .displayName("§c")
-                        .build()
+                    Slots.All, Items.blackGlass()
                 )
 
                 button(
                     Slots.RowTwoSlotFive,
-                    ItemBuilder(Material.GREEN_CONCRETE)
-                        .displayName("§aKlick mich")
-                        .addLore("§aKlick §7dieses Item um die Location zu setzen.")
-                        .build()
+                    itemStack(Material.GREEN_CONCRETE) {
+                        meta {
+                            name = "§aKlick mich"
+
+                            addLore {
+                                +"§aKlick §7dieses Item um die Location zu setzen."
+                            }
+                        }
+                    }
                 ) {
                     location = player.location
                     openSettingsGUI(player, name, description, location, gameMode)
                 }
 
                 pageChanger(
-                    Slots.RowOneSlotOne, ItemBuilder(Material.PAPER)
-                        .displayName("§aZurürck zum Hauptmenü")
-                        .addLore("§7Kehre zurürck zum §aHauptmenü§7.")
-                        .build(),
+                    Slots.RowOneSlotOne, Items.mainMenu(),
                     1, null, null
                 )
             }
@@ -273,17 +311,20 @@ class ChallengeCommand(
                 transitionTo = PageChangeEffect.SLIDE_HORIZONTALLY
 
                 placeholder(
-                    Slots.All, ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-                        .displayName("§c")
-                        .build()
+                    Slots.All, Items.blackGlass()
                 )
 
                 button(
                     Slots.RowTwoSlotTwo,
-                    ItemBuilder(Material.IRON_SWORD)
-                        .displayName("§aSurvival")
-                        .addLore("§7Klicke dieses Item um den §aSpielmodus §7für die Challenge zu setzen.")
-                        .build()
+                    itemStack(Material.IRON_SWORD) {
+                        meta {
+                            name = "§aSurvival"
+
+                            addLore {
+                                +"§7Klicke dieses Item um den §aSpielmodus §7für die Challenge zu setzen."
+                            }
+                        }
+                    }
                 ) {
                     gameMode = GameMode.SURVIVAL
                     openSettingsGUI(player, name, description, location, gameMode)
@@ -291,10 +332,15 @@ class ChallengeCommand(
 
                 button(
                     Slots.RowTwoSlotFour,
-                    ItemBuilder(Material.GRASS_BLOCK)
-                        .displayName("§aCreative")
-                        .addLore("§7Klicke dieses Item um den §aSpielmodus §7für die Challenge zu setzen.")
-                        .build()
+                    itemStack(Material.IRON_SWORD) {
+                        meta {
+                            name = "§aCreative"
+
+                            addLore {
+                                +"§7Klicke dieses Item um den §aSpielmodus §7für die Challenge zu setzen."
+                            }
+                        }
+                    }
                 ) {
                     gameMode = GameMode.CREATIVE
                     openSettingsGUI(player, name, description, location, gameMode)
@@ -302,10 +348,15 @@ class ChallengeCommand(
 
                 button(
                     Slots.RowTwoSlotSix,
-                    ItemBuilder(Material.MAP)
-                        .displayName("§aAdventure")
-                        .addLore("§7Klicke dieses Item um den §aSpielmodus §7für die Challenge zu setzen.")
-                        .build()
+                    itemStack(Material.IRON_SWORD) {
+                        meta {
+                            name = "§aAdventure"
+
+                            addLore {
+                                +"§7Klicke dieses Item um den §aSpielmodus §7für die Challenge zu setzen."
+                            }
+                        }
+                    }
                 ) {
                     gameMode = GameMode.ADVENTURE
                     openSettingsGUI(player, name, description, location, gameMode)
@@ -313,20 +364,22 @@ class ChallengeCommand(
 
                 button(
                     Slots.RowTwoSlotEight,
-                    ItemBuilder(Material.ENDER_EYE)
-                        .displayName("§aSpectator")
-                        .addLore("§7Klicke dieses Item um den §aSpielmodus §7für die Challenge zu setzen.")
-                        .build()
+                    itemStack(Material.IRON_SWORD) {
+                        meta {
+                            name = "§aSpectator"
+
+                            addLore {
+                                +"§7Klicke dieses Item um den §aSpielmodus §7für die Challenge zu setzen."
+                            }
+                        }
+                    }
                 ) {
                     gameMode = GameMode.SPECTATOR
                     openSettingsGUI(player, name, description, location, gameMode)
                 }
 
                 pageChanger(
-                    Slots.RowOneSlotOne, ItemBuilder(Material.PAPER)
-                        .displayName("§aZurürck zum Hauptmenü")
-                        .addLore("§7Kehre zurürck zum §aHauptmenü§7.")
-                        .build(),
+                    Slots.RowOneSlotOne, Items.mainMenu(),
                     1, null, null
                 )
             }

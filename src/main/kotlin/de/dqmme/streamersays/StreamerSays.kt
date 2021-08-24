@@ -11,18 +11,10 @@ import org.bukkit.Bukkit
 import java.io.File
 
 class StreamerSays : KSpigot() {
-    companion object {
-        lateinit var INSTANCE: StreamerSays; private set
-    }
-
     lateinit var challengeFile: File
     lateinit var itemFile: File
     lateinit var kitFile: File
     lateinit var messageFile: File
-
-    override fun load() {
-        INSTANCE = this
-    }
 
     override fun startup() {
         challengeFile = File(dataFolder, "challenges.yml")
