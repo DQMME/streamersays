@@ -58,7 +58,15 @@ class StreamerSays : KSpigot() {
         pluginManager.registerEvents(DeathListener(messageManager), this)
         pluginManager.registerEvents(HungerListener(), this)
         pluginManager.registerEvents(JoinListener(gameManager, messageManager), this)
-        pluginManager.registerEvents(InteractListener(gameManager, challengeManager, kitManager, itemManager, messageManager), this)
+        pluginManager.registerEvents(
+            InteractListener(
+                gameManager,
+                challengeManager,
+                kitManager,
+                itemManager,
+                messageManager
+            ), this
+        )
     }
 
     private fun commandRegistration(
@@ -82,5 +90,8 @@ class StreamerSays : KSpigot() {
 
         getCommand("revive")!!.setExecutor(ReviveCommand(gameManager, messageManager))
         getCommand("revive")!!.setTabCompleter(ReviveCommand(gameManager, messageManager))
+
+        getCommand("clear")!!.setExecutor(ClearCommand(messageManager))
+        getCommand("clear")!!.setTabCompleter(ClearCommand(messageManager))
     }
 }

@@ -14,3 +14,5 @@ commands:
     permission: streamersays.item
   revive:
     permission: streamersays.revive
+  clear:
+    permission: streamersays.clear
